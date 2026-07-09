@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: "optional:configserver:http://${CONFIG_SERVER_USERNAME:config}:${CONFIG_SERVER_PASSWORD:config-secret}@localhost:8888"
+
+# Fail-fast allows local development without config server if the optional import is used,
+# but we recommend keeping config server running.

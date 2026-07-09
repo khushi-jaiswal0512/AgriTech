@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         PARENT: Spring Boot Starter Parent
+         Provides default dependency versions, plugin management,
+         and sensible defaults for Spring Boot applications.
+         ═══════════════════════════════════════════════════════════ -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         PROJECT COORDINATES
+         ═══════════════════════════════════════════════════════════ -->
+    <groupId>com.agritech</groupId>
+    <artifactId>agritech-platform</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Agritech Marketplace Platform</name>
+    <description>
+        Production-grade scalable Agritech Marketplace Platform that eliminates
+        middlemen and connects farmers directly with consumers and retailers.
+        Built with microservices architecture using Spring Boot and Spring Cloud.
+    </description>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MODULES
+         Listed in build dependency order. The common library is built
+         first since all other modules depend on it.
+         ═══════════════════════════════════════════════════════════ -->
+    <modules>
+        <module>agritech-common</module>
+        <!-- Infrastructure modules (Phase 1B/1C) -->
+        <module>config-server</module>
+        <module>eureka-server</module>
+        <module>api-gateway</module>
+        <!-- Core services (Phase 2+) -->
+        <module>auth-service</module>
+        <module>user-service</module>
+        <module>product-service</module>
+        <module>cart-service</module>
+        <module>wishlist-service</module>
+        <module>order-service</module>
+        <module>rating-service</module>
+        <module>chat-service</module>
+        <module>notification-service</module>
+        <module>admin-service</module>
+    </modules>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         PROPERTIES
+         Centralized version management for all dependencies.
+         Spring Boot BOM manages most Spring ecosystem versions.
+         Only non-Boot-managed dependencies are declared here.
+         ═══════════════════════════════════════════════════════════ -->
+    <properties>
+        <!-- Java -->
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Spring Cloud BOM (Moorgate release train for Boot 3.4.x) -->
+        <spring-cloud.version>2024.0.3</spring-cloud.version>
+
+        <!-- JWT -->
+        <jjwt.version>0.12.6</jjwt.version>
+
+        <!-- Mapping -->
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+
+        <!-- Resilience -->
+        <resilience4j.version>2.2.0</resilience4j.version>
+
+        <!-- Documentation -->
+        <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
+
+        <!-- AWS SDK v2 -->
+        <aws-sdk.version>2.26.12</aws-sdk.version>
+    </properties>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         DEPENDENCY MANAGEMENT
+         Centralized version control. Child modules inherit these
+         versions without specifying <version> themselves.
+         ═══════════════════════════════════════════════════════════ -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Cloud BOM -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- JWT (JJWT) -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- MapStruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Resilience4j -->
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-spring-boot3</artifactId>
+                <version>${resilience4j.version}</version>
+            </dependency>
+
+            <!-- SpringDoc OpenAPI (Swagger) -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
+
+            <!-- Agritech Common Library -->
+            <dependency>
+                <groupId>com.agritech</groupId>
+                <artifactId>agritech-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- AWS SDK v2 BOM -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${aws-sdk.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SHARED DEPENDENCIES
+         These are inherited by ALL child modules.
+         Only truly universal dependencies belong here.
+         ═══════════════════════════════════════════════════════════ -->
+    <dependencies>
+        <!-- Lombok (compile-time only, universal) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         BUILD PLUGINS
+         Shared plugin configuration for all child modules.
+         ═══════════════════════════════════════════════════════════ -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Spring Boot Maven Plugin (only for executable JARs) -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+
+                <!-- Compiler plugin with MapStruct + Lombok annotation processing -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>21</source>
+                        <target>21</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>${lombok-mapstruct-binding.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                        <compilerArgs>
+                            <arg>-Amapstruct.defaultComponentModel=spring</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

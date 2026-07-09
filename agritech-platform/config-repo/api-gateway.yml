@@ -1,0 +1,123 @@
+# ═══════════════════════════════════════════════════════════
+# API Gateway Configuration
+# Port: 8080 | Redis Rate Limiter | JWT Validation
+# ═══════════════════════════════════════════════════════════
+server:
+  port: ${GATEWAY_PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:3000"
+              - "http://localhost:8080"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowed-headers: "*"
+            allow-credentials: true
+            max-age: 3600
+      routes:
+        # ── Auth Service ──
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=0
+
+        # ── User Service ──
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=0
+
+        # ── Product Service ──
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/api/products/**, /api/categories/**
+          filters:
+            - StripPrefix=0
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@userKeyResolver}"
+
+        # ── Order Service ──
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - StripPrefix=0
+
+        # ── Cart Service ──
+        - id: cart-service
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - StripPrefix=0
+
+        # ── Wishlist Service ──
+        - id: wishlist-service
+          uri: lb://WISHLIST-SERVICE
+          predicates:
+            - Path=/api/wishlist/**
+          filters:
+            - StripPrefix=0
+
+        # ── Rating Service ──
+        - id: rating-service
+          uri: lb://RATING-SERVICE
+          predicates:
+            - Path=/api/ratings/**
+          filters:
+            - StripPrefix=0
+
+        # ── Chat Service ──
+        - id: chat-service
+          uri: lb://CHAT-SERVICE
+          predicates:
+            - Path=/api/chat/**, /ws/chat/**
+          filters:
+            - StripPrefix=0
+
+        # ── Notification Service ──
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/notifications/**, /ws/notifications/**
+          filters:
+            - StripPrefix=0
+
+        # ── Admin Service ──
+        - id: admin-service
+          uri: lb://ADMIN-SERVICE
+          predicates:
+            - Path=/api/admin/**
+          filters:
+            - StripPrefix=0
+
+  # ── Redis (for rate limiter) ──
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms

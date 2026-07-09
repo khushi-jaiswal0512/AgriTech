@@ -1,0 +1,40 @@
+# ═══════════════════════════════════════════════════════════
+# Eureka Server — application.yml
+# Port: 8761
+# Standalone mode (single instance, does not register with itself)
+# ═══════════════════════════════════════════════════════════
+server:
+  port: ${EUREKA_PORT:8761}
+
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  instance:
+    hostname: ${EUREKA_HOSTNAME:localhost}
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    # Disable self-preservation in dev (enable in prod)
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 5000
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.netflix.eureka: WARN
+    com.netflix.discovery: WARN
